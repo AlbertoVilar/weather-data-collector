@@ -3,10 +3,9 @@ package com.gntech.weather_collector.api.controller;
 import com.gntech.weather_collector.api.dto.WeatherResponseDTO;
 import com.gntech.weather_collector.business.service.WeatherService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/weather")
@@ -30,6 +29,14 @@ public class WeatherController {
         var weatherResponse = weatherService.getWeatherByCity(city);
 
         return ResponseEntity.ok(weatherResponse);
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<List<WeatherResponseDTO>> getHistoryByCity(
+            @RequestParam String city) {
+
+        List<WeatherResponseDTO> history = weatherService.getHistoryByCity(city);
+        return ResponseEntity.ok(history);
     }
 
 }

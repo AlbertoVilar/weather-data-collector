@@ -7,6 +7,8 @@ import com.gntech.weather_collector.infrastructure.repository.WeatherRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class WeatherService {
 
@@ -37,5 +39,14 @@ public class WeatherService {
         var weatherData = dataConverter.toWeatherData(weatherResponse);
         weatherData = repository.save(weatherData);
         return dataConverter.weatherResponseDTO(weatherData);
+    }
+
+    public List<WeatherResponseDTO> getHistoryByCity(String city) {
+        if (city == null || city.isBlank()) {
+            throw new IllegalArgumentException("City cannot be null or empty");
+        }
+        var weatherDataList = repository.findByCityOrderByCollectedAtDesc(city);
+
+        return weatherDataList.stream().map(dataConverter::weatherResponseDTO).toList();
     }
 }
