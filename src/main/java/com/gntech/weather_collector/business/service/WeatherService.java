@@ -14,13 +14,13 @@ public class WeatherService {
     private final OpenWeatherClient client;
     private final WeatherDataConverter dataConverter;
 
-    @Value("${openweather.api.key}")
+    @Value("${openweather.api.key:}")
     private String apiKey;
 
-    @Value("${openweather.api.units}")
+    @Value("${openweather.api.units:metric}")
     private String units;
 
-    @Value("${openweather.api.lang}")
+    @Value("${openweather.api.lang:en}")
     private String language;
 
     public WeatherService(WeatherRepository repository, OpenWeatherClient client, WeatherDataConverter dataConverter) {
@@ -30,7 +30,9 @@ public class WeatherService {
     }
 
     public WeatherResponseDTO getWeatherByCity(String city) {
-
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new IllegalStateException("Missing OpenWeather API key. Set OPENWEATHER_API_KEY environment variable.");
+        }
         var weatherResponse = client.getWeatherByCity(city, apiKey, units, language);
         var weatherData = dataConverter.toWeatherData(weatherResponse);
         weatherData = repository.save(weatherData);
