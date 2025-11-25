@@ -3,6 +3,7 @@ package com.gntech.weather_collector.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "weather_data")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -51,4 +53,3 @@ public class WeatherData {
     private LocalDateTime createdAt;
 
 }
-
