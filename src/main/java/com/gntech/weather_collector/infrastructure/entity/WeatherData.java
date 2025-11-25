@@ -3,6 +3,7 @@ package com.gntech.weather_collector.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -41,11 +42,12 @@ public class WeatherData {
     @Column(name = "wind_speed", precision = 5, scale = 2)
     private BigDecimal windSpeed;
 
-    @Column(name = "collected_at", nullable = false)
+    @CreatedDate
+    @Column(name = "collected_at", updatable = false, nullable = false)
     private LocalDateTime collectedAt;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
 }
