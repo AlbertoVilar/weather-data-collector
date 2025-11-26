@@ -19,25 +19,23 @@ public class WeatherController {
 
     @GetMapping("/{city}")
     public ResponseEntity<WeatherResponseDTO> getWeather(@PathVariable String city) {
-
-        if (city == null || city.isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
-
+        // Normaliza entrada
         city = city.trim().toLowerCase();
 
+        // Service valida e lança exceções
         var weatherResponse = weatherService.getWeatherByCity(city);
 
         return ResponseEntity.ok(weatherResponse);
     }
 
     @GetMapping("/history")
-    public ResponseEntity<List<WeatherResponseDTO>> getHistoryByCity(
-            @RequestParam String city) {
+    public ResponseEntity<List<WeatherResponseDTO>> getHistoryByCity(@RequestParam String city) {
+        // Normaliza entrada
+        city = city.trim().toLowerCase();
 
+        // Service valida e lança exceções
         List<WeatherResponseDTO> history = weatherService.getHistoryByCity(city);
+
         return ResponseEntity.ok(history);
     }
-
 }
-

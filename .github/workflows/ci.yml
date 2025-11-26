@@ -25,10 +25,10 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: maven
+          cache: 'none'
 
-      - name: Build and test with Maven
-        run: mvn clean install
+      - name: Build and test with Maven (clean, force updates)
+        run: mvn -U -B clean install
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4

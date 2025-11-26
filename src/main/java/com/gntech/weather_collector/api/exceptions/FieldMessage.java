@@ -1,4 +1,4 @@
-package com.fastshop.exceptions;
+package com.gntech.weather_collector.api.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,7 @@
 package com.gntech.weather_collector.business.service;
 
 import com.gntech.weather_collector.api.dto.WeatherResponseDTO;
+import com.gntech.weather_collector.api.exceptions.InvalidApiKeyException;
 import com.gntech.weather_collector.infrastructure.client.OpenWeatherClient;
 import com.gntech.weather_collector.infrastructure.mapper.WeatherDataConverter;
 import com.gntech.weather_collector.infrastructure.repository.WeatherRepository;
@@ -32,21 +33,35 @@ public class WeatherService {
     }
 
     public WeatherResponseDTO getWeatherByCity(String city) {
+        // Validação da API key
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("Missing OpenWeather API key. Set OPENWEATHER_API_KEY environment variable.");
+            throw new InvalidApiKeyException("Chave de API não configurada. Configure a variável OPENWEATHER_API_KEY");
         }
-        var weatherResponse = client.getWeatherByCity(city, apiKey, units, language);
+
+        // Remove espaços da API key (bug comum!)
+        String cleanApiKey = apiKey.trim();
+
+        var weatherResponse = client.getWeatherByCity(city, cleanApiKey, units, language);
+
         var weatherData = dataConverter.toWeatherData(weatherResponse);
+
         weatherData = repository.save(weatherData);
+
         return dataConverter.weatherResponseDTO(weatherData);
     }
 
     public List<WeatherResponseDTO> getHistoryByCity(String city) {
+        // Validação
         if (city == null || city.isBlank()) {
-            throw new IllegalArgumentException("City cannot be null or empty");
+            throw new IllegalArgumentException("Cidade não pode ser nula ou vazia");
         }
-        var weatherDataList = repository.findByCityOrderByCollectedAtDesc(city);
 
-        return weatherDataList.stream().map(dataConverter::weatherResponseDTO).toList();
+        // Busca no banco
+        var weatherDataList = repository.findByCityIgnoreCaseOrderByCollectedAtDesc(city);
+
+        // Converte para DTO
+        return weatherDataList.stream()
+                .map(dataConverter::weatherResponseDTO)
+                .toList();
     }
 }

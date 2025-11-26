@@ -1,29 +1,24 @@
-package com.fastshop.handlers;
+package com.gntech.weather_collector.api.handlers;
 
-import com.fastshop.exceptions.DatabaseException;
-import com.fastshop.exceptions.ResourceNotFoundException;
-import com.fastshop.exceptions.StandardError;
+import com.gntech.weather_collector.api.exceptions.CityNotFoundException;
+import com.gntech.weather_collector.api.exceptions.InvalidApiKeyException;
+import com.gntech.weather_collector.api.exceptions.RateLimitExceededException;
+import com.gntech.weather_collector.api.exceptions.StandardError;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.OffsetDateTime;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.dao.DataIntegrityViolationException;
-import java.util.List;
-import java.util.stream.Collectors;
-import com.fastshop.exceptions.FieldMessage;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<StandardError> handleResourceNotFound(
-            ResourceNotFoundException ex, HttpServletRequest request) {
+    @ExceptionHandler(CityNotFoundException.class)
+    public ResponseEntity<StandardError> handleCityNotFound(
+            CityNotFoundException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
         StandardError err = new StandardError();
         err.setTimestamp(OffsetDateTime.now().toString());
@@ -34,49 +29,35 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<StandardError> methodArgumentNotValid(
-            MethodArgumentNotValidException ex, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+    @ExceptionHandler(InvalidApiKeyException.class)
+    public ResponseEntity<StandardError> handleInvalidApiKey(
+            InvalidApiKeyException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
         StandardError err = new StandardError();
         err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
-        err.setError("Recursos inválidos");
-        err.setMessage("Erro de validação nos campos");
-        err.setPath(request.getRequestURI());
-        // Monta lista de erros de campo
-        List<FieldMessage> errors = ex.getBindingResult().getFieldErrors().stream()
-                .map(fieldError -> new FieldMessage(fieldError.getField(), fieldError.getDefaultMessage()))
-                .collect(Collectors.toList());
-        err.setErrors(errors); // Adiciona os erros de campo ao StandardError
-        return ResponseEntity.status(status).body(err);
-    }
-    
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<StandardError> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST; // Could be CONFLICT depending on semantics
-        StandardError err = new StandardError();
-        err.setTimestamp(OffsetDateTime.now().toString());
-        err.setStatus(status.value());
-        err.setError("Violação de integridade de dados");
-        String message = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage();
-        err.setMessage(message);
-        err.setPath(request.getRequestURI());
-        return ResponseEntity.status(status).body(err);
-    }
-    @ExceptionHandler(DatabaseException.class)
-    public ResponseEntity<StandardError> handleDatabase(DatabaseException ex, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST; // ou CONFLICT
-        StandardError err = new StandardError();
-        err.setTimestamp(OffsetDateTime.now().toString());
-        err.setStatus(status.value());
-        err.setError("Erro de integridade de banco de dados");
+        err.setError("Não autorizado");
         err.setMessage(ex.getMessage());
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<StandardError> handleRateLimit(
+            RateLimitExceededException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.TOO_MANY_REQUESTS;
+        StandardError err = new StandardError();
+        err.setTimestamp(OffsetDateTime.now().toString());
+        err.setStatus(status.value());
+        err.setError("Limite de requisições excedido");
+        err.setMessage(ex.getMessage());
+        err.setPath(request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<StandardError> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+    public ResponseEntity<StandardError> handleIllegalArgument(
+            IllegalArgumentException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         StandardError err = new StandardError();
         err.setTimestamp(OffsetDateTime.now().toString());
@@ -86,42 +67,57 @@ public class GlobalExceptionHandler {
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
-    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
-    public ResponseEntity<StandardError> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException ex, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<StandardError> handleIllegalState(
+            IllegalStateException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         StandardError err = new StandardError();
         err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
-        err.setError("Erro de leitura do corpo da requisição");
-        err.setMessage("JSON malformado ou campos inválidos: " + ex.getMostSpecificCause().getMessage());
+        err.setError("Erro de configuração");
+        err.setMessage(ex.getMessage());
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 
-    // Credenciais inválidas na autenticação
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<StandardError> handleBadCredentials(BadCredentialsException ex, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<StandardError> handleFeignException(
+            FeignException ex, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.SERVICE_UNAVAILABLE;
+        String message = "Falha ao buscar dados da API externa de clima";
+
+        if (ex.status() == 404) {
+            status = HttpStatus.NOT_FOUND;
+            message = "Cidade não encontrada na API externa";
+        } else if (ex.status() == 401) {
+            status = HttpStatus.UNAUTHORIZED;
+            message = "Chave de API inválida ou expirada";
+        } else if (ex.status() == 429) {
+            status = HttpStatus.TOO_MANY_REQUESTS;
+            message = "Limite de requisições excedido";
+        }
+
         StandardError err = new StandardError();
         err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
-        err.setError("Credenciais inválidas");
-        err.setMessage("Usuário ou senha incorretos");
+        err.setError(status.getReasonPhrase());
+        err.setMessage(message);
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 
-    // Fallback para outras AuthenticationException
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<StandardError> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<StandardError> handleGenericException(
+            Exception ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         StandardError err = new StandardError();
         err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
-        err.setError("Falha na autenticação");
-        err.setMessage("Usuário ou senha incorretos");
+        err.setError("Erro interno do servidor");
+        err.setMessage("Ocorreu um erro inesperado");
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
-
 }
