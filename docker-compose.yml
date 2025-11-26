@@ -17,6 +17,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - weather-network
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -31,7 +33,32 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - weather-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weather-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/weather_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
+    ports:
+      - "8080:8080"
+    networks:
+      - weather-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   postgres_data:
   pgadmin_data:
+
+networks:
+  weather-network:
+    driver: bridge

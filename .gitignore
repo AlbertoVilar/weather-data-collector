@@ -47,6 +47,6 @@ Thumbs.db
 mvnw
 mvnw.cmd
 
-# Sensitive data (uncomment if needed)
+# Sensitive data
 # application-prod.properties
-# .env
+.env
