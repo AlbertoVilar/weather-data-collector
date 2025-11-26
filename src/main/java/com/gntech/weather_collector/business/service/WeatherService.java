@@ -57,7 +57,7 @@ public class WeatherService {
         }
 
         // Busca no banco
-        var weatherDataList = repository.findByCityIgnoreCaseOrderByCollectedAtDesc(city);
+        var weatherDataList = repository.findByCityAccentInsensitiveOrderByCollectedAtDesc(city);
 
         // Converte para DTO
         return weatherDataList.stream()
