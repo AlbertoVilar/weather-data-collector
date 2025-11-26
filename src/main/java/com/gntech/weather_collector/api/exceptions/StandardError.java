@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +16,6 @@ public class StandardError {
     private String error;
     private String message;
     private String path;
-    private List<FieldMessage> errors;
 
 
 }
