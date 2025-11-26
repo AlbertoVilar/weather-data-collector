@@ -25,7 +25,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: 'none'
+          cache: maven
 
       - name: Build and test with Maven (clean, force updates)
         run: mvn -U -B clean install
