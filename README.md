@@ -9,7 +9,6 @@
 [![Swagger](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D?logo=swagger)](https://swagger.io/)
 
 ---
-
 ## 📋 Sobre o Projeto
 
 Esta API REST permite:
