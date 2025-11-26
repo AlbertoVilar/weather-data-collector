@@ -37,12 +37,10 @@ public class WeatherService {
         if (city == null || city.isBlank()) {
             throw new BadRequestException("City cannot be null or empty");
         }
-        // Validação da API key
         if (apiKey == null || apiKey.isBlank()) {
             throw new InvalidApiKeyException("Chave de API não configurada. Configure a variável OPENWEATHER_API_KEY");
         }
 
-        // Remove espaços da API key (bug comum!)
         String cleanApiKey = apiKey.trim();
 
         var weatherResponse = client.getWeatherByCity(city, cleanApiKey, units, language);
@@ -59,10 +57,8 @@ public class WeatherService {
             throw new BadRequestException("City cannot be null or empty");
         }
 
-        // Busca no banco
         var weatherDataList = repository.findByCityAccentInsensitiveOrderByCollectedAtDesc(city);
 
-        // Converte para DTO
         return weatherDataList.stream()
                 .map(dataConverter::weatherResponseDTO)
                 .toList();

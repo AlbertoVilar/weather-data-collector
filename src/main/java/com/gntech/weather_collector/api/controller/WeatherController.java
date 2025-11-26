@@ -36,10 +36,7 @@ public class WeatherController {
             @Parameter(description = "Nome da cidade", example = "rio de janeiro")
             @PathVariable String city
     ) {
-        // Normaliza entrada
         city = city.trim().toLowerCase();
-
-        // Service valida e lança exceções
         var weatherResponse = weatherService.getWeatherByCity(city);
 
         return ResponseEntity.ok(weatherResponse);
@@ -56,10 +53,7 @@ public class WeatherController {
             @Parameter(description = "Nome da cidade", example = "rio de janeiro")
             @RequestParam String city
     ) {
-        // Normaliza entrada
         city = city.trim().toLowerCase();
-
-        // Service valida e lança exceções
         List<WeatherResponseDTO> history = weatherService.getHistoryByCity(city);
 
         return ResponseEntity.ok(history);
