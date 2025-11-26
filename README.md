@@ -1,6 +1,6 @@
 # 🌦️ Weather Data Collector API
 
-Sistema de coleta e armazenamento de dados climáticos utilizando OpenWeather API, desenvolvido como desafio técnico para vaga de Desenvolvedor Júnior.
+> Sistema de coleta e armazenamento de dados climáticos utilizando OpenWeather API, desenvolvido como desafio técnico para vaga de Desenvolvedor Júnior.
 
 [![Java](https://img.shields.io/badge/Java-21-orange?logo=java)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.1-brightgreen?logo=spring)](https://spring.io/projects/spring-boot)
@@ -8,37 +8,99 @@ Sistema de coleta e armazenamento de dados climáticos utilizando OpenWeather AP
 [![Docker](https://img.shields.io/badge/Docker-Enabled-blue?logo=docker)](https://www.docker.com/)
 [![Swagger](https://img.shields.io/badge/API%20Docs-Swagger-85EA2D?logo=swagger)](https://swagger.io/)
 
-Coleta dados climáticos via OpenWeather, persiste em PostgreSQL e expõe uma API REST documentada com Swagger. Inclui ambiente Docker (API + Postgres + pgAdmin) para execução reprodutível.
+---
 
-## Objetivo
-- Atender à avaliação técnica: extração de dados via API, armazenamento em banco relacional, acesso remoto via API REST, conteinerização com Docker e organização clara no Git.
+## 📋 Sobre o Projeto
 
-## Stack
-- Java 21, Spring Boot 3.3.1
-- Springdoc OpenAPI 2.6.0 (Swagger UI)
-- PostgreSQL 15 (alpine), pgAdmin
-- Maven, Docker, Docker Compose
+Esta API REST permite:
 
-## Funcionalidades
-- GET na OpenWeather com `apiKey` e parâmetros dinâmicos
-- Persistência dos dados coletados em `weather_data` (PostgreSQL)
-- API REST para consulta do dado atual e histórico por cidade
-- Documentação automática via Swagger UI
+- 🌍 Buscar dados climáticos atuais de qualquer cidade via OpenWeather API
+- 💾 Armazenar histórico de consultas em PostgreSQL
+- 📊 Consultar histórico de dados climáticos por cidade
+- 📚 Documentação interativa via Swagger/OpenAPI
+- 🐳 Ambiente completo containerizado com Docker
 
-## Executar com Docker (recomendado)
-### Pré‑requisitos
-- Docker e Docker Compose instalados
-- Chave de API OpenWeather (gratuita)
+---
 
-### 1. Obtenha sua chave de API OpenWeather
-1. Acesse `https://openweathermap.org/api`
-2. Crie uma conta gratuita e copie sua chave em "API keys"
-3. Observação: a chave pode levar até 2 horas para ativar no plano gratuito
-4. Plano gratuito permite até 1.000 chamadas/dia; acima disso, há cobrança por call
+## 🛠️ Stack Tecnológica
 
-### 2. Configure as variáveis de ambiente
-- Copie o arquivo de exemplo:
+### Backend
+- ☕ **Java 21**
+- 🍃 **Spring Boot 3.3.1**
+- 📦 **Spring Data JPA**
+- 🔗 **Spring Cloud OpenFeign** - Cliente HTTP declarativo
+- 🗄️ **PostgreSQL 15** - Banco de dados relacional
+- 🔧 **Lombok** - Redução de boilerplate
+
+### Documentação & DevOps
+- 📖 **Swagger/OpenAPI 2.6.0** - Documentação interativa
+- 🐳 **Docker & Docker Compose** - Containerização
+- 🔄 **GitHub Actions** - CI/CD automatizado
+- 📦 **Maven** - Gerenciamento de dependências
+
+### API Externa
+- 🌤️ **OpenWeather API** - Fonte de dados climáticos
+
+---
+
+## 📁 Estrutura do Projeto
+
 ```
+weather-collector/
+├── 📂 src/main/java/com/gntech/weather_collector/
+│   ├── 📂 api/
+│   │   ├── 🎮 controller/          # Endpoints REST
+│   │   ├── 📦 dto/                 # Objetos de transferência
+│   │   ├── ⚠️ exceptions/          # Exceções customizadas
+│   │   └── 🛡️ handlers/            # Tratamento global de erros
+│   ├── 📂 business/
+│   │   └── 💼 service/             # Lógica de negócio
+│   └── 📂 infrastructure/
+│       ├── 🔌 client/              # Feign Client (OpenWeather)
+│       ├── 🗃️ entity/              # Entidades JPA
+│       ├── 🔄 mapper/              # Conversores de dados
+│       └── 💾 repository/          # Repositórios JPA
+├── 🐳 docker-compose.yml           # Configuração Docker
+├── 📦 pom.xml                      # Dependências Maven
+└── 📖 README.md                    # Documentação
+```
+
+---
+
+## 🚀 Como Executar
+
+### 📋 Pré-requisitos
+
+- ☕ **Java 21** ou superior
+- 📦 **Maven 3.8+**
+- 🐳 **Docker** e **Docker Compose**
+- 🔑 **Chave de API OpenWeather** (gratuita)
+
+---
+
+### 1️⃣ Clone o Repositório
+
+```bash
+git clone https://github.com/albertovilar/weather-collector.git
+cd weather-collector
+```
+
+---
+
+### 2️⃣ Obtenha sua Chave OpenWeather API
+
+1. 🌐 Acesse [https://openweathermap.org/api](https://openweathermap.org/api)
+2. 📝 Crie uma conta gratuita
+3. 🔑 Acesse **"API keys"** e copie sua chave
+4. ⏰ **Importante:** A chave pode levar até 2 horas para ativar (plano free)
+
+---
+
+### 3️⃣ Configure as Variáveis de Ambiente
+
+**Copie o arquivo de exemplo:**
+
+```bash
 # Linux/Mac
 cp .env.example .env
 
@@ -48,129 +110,319 @@ copy .env.example .env
 # Windows (CMD)
 copy .env.example .env
 ```
-- Edite o arquivo `.env` e substitua `your_api_key_here` pela sua chave:
-```
-OPENWEATHER_API_KEY=sua_chave_real_aqui
-```
 
-### 3. Suba os serviços
-`docker compose up -d --build`
+**Edite o arquivo `.env` e substitua pela sua chave:**
 
-### 4. Aguarde a inicialização (~30 segundos) e acompanhe logs
-`docker compose logs -f app`
-Quando aparecer `Started WeatherCollectorApplication`, está pronto.
-
-### 5. Teste
-- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
-- API docs (JSON): `http://localhost:8080/v3/api-docs`
-- Health: `http://localhost:8080/actuator/health`
-- Exemplo de chamada: `GET http://localhost:8080/weather/rio%20de%20janeiro`
-
-Comandos úteis:
-- Parar só a API: `docker compose stop app`
-- Iniciar a API: `docker compose start app`
-- Reiniciar a API: `docker compose restart app`
-- Derrubar tudo: `docker compose down`
-- Logs da API: `docker logs -f weather-app`
-
-## Executar localmente (sem Docker)
-1. Pré‑requisitos: Java 21, Maven, PostgreSQL local
-2. Configure a API key:
-   - Windows: `set OPENWEATHER_API_KEY=SEU_TOKEN_AQUI && mvn spring-boot:run`
-3. Configure o banco (por padrão):
-   - `spring.datasource.url=jdbc:postgresql://localhost:5432/weather_db`
-   - `spring.datasource.username=postgres`
-   - `spring.datasource.password=postgres`
-4. Endpoints: iguais aos do Docker (porta 8080)
-
-## Endpoints
-- `GET /weather/{city}`
-  - Busca dados atuais da OpenWeather para a cidade, persiste e retorna o registro como DTO.
-- `GET /weather/history?city={city}`
-  - Lista histórico local da cidade, ordenado por `collectedAt` desc.
-- Swagger UI: `GET /swagger-ui/index.html`
-- API docs: `GET /v3/api-docs`
-- Health: `GET /actuator/health`
-
-## Banco de Dados
-- Tabela: `weather_data`
-  - Campos principais: `id`, `city`, `country`, `temperature`, `feels_like`, `humidity`, `description`, `wind_speed`, `collected_at`, `created_at`
-- Busca acento‑insensível no histórico via `unaccent`:
-  - Caso necessário, habilite a extensão no Postgres: `CREATE EXTENSION IF NOT EXISTS unaccent;`
-
-## Arquitetura
-- `api/controller`: endpoints REST e documentação OpenAPI
-- `business/service`: regras de negócio, validações e integração com client
-- `infrastructure/client`: Feign client para OpenWeather e `ErrorDecoder`
-- `infrastructure/entity` e `infrastructure/repository`: persistência JPA
-- `infrastructure/mapper`: conversões entre `OpenWeatherResponse ↔ WeatherData ↔ WeatherResponseDTO`
-- `api/handlers`: tratamento global de exceções (escopo ao `WeatherController`)
-
-## Tratamento de Erros
-- Exceptions de domínio mapeadas no handler global:
-  - `BadRequestException` → 400
-  - `InvalidApiKeyException` → 401
-  - `CityNotFoundException` → 404
-  - `RateLimitExceededException` → 429
-- Padrão de resposta: `StandardError { timestamp, status, error, message, path }`
-- Erros da OpenWeather são traduzidos pelo `OpenWeatherErrorDecoder`
-
-## Docker Compose
-- Serviços:
-  - `postgres` (com healthcheck)
-  - `pgadmin`
-  - `app` (API Spring Boot)
-- Rede interna: `weather-network`
-- `depends_on`: `app` aguarda `postgres` saudável
-- `restart: unless-stopped` para `app`
-
-## Configuração
-- Variáveis de ambiente principais:
-  - `OPENWEATHER_API_KEY` (obrigatória)
-  - `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD` (compostas no Compose)
-- Perfil `prod` no container para execução enxuta.
-
-## Versionamento
-- Branch principal de trabalho: `develop`
-- Commits semânticos e PRs claros.
-
-## Estrutura final dos arquivos
-```
-weather-collector/
-├── .env                    ← NO .gitignore (não versionado)
-├── .env.example            ← versão de exemplo (versionado)
-├── .gitignore              ← ignora .env, mantém .env.example
-├── Dockerfile
-├── docker-compose.yml
-└── README.md               ← instruções claras
+```env
+OPENWEATHER_API_KEY=sua_chave_aqui
 ```
 
-## 🐳 Comandos Docker úteis
+---
+
+### 4️⃣ Suba os Serviços com Docker
+
+```bash
+docker compose up --build -d
 ```
-# Iniciar serviços
+
+**Aguarde ~30 segundos para a inicialização completa.**
+
+---
+
+### 5️⃣ Verifique se Está Rodando
+
+**Acompanhe os logs:**
+```bash
+docker compose logs -f app
+```
+
+**Quando ver `Started WeatherCollectorApplication`, está pronto!** ✅
+
+---
+
+### 6️⃣ Acesse a Aplicação
+
+| Serviço | URL | Descrição |
+|---------|-----|-----------|
+| 🎨 **Swagger UI** | http://localhost:8080/swagger-ui/index.html | Interface interativa da API |
+| 📄 **OpenAPI Docs** | http://localhost:8080/v3/api-docs | Documentação JSON |
+| ❤️ **Health Check** | http://localhost:8080/actuator/health | Status da aplicação |
+| 🗄️ **pgAdmin** | http://localhost:5050 | Gerenciador do banco |
+
+**Credenciais pgAdmin:**
+- 📧 Email: `admin@example.com`
+- 🔒 Senha: `admin`
+
+---
+
+## 📡 Endpoints da API
+
+### 🌤️ Buscar Clima Atual
+
+Busca dados climáticos atuais de uma cidade e salva no banco.
+
+```http
+GET /weather/{city}
+```
+
+**📝 Exemplo:**
+```bash
+curl -X GET "http://localhost:8080/weather/rio%20de%20janeiro"
+```
+
+**✅ Resposta (200 OK):**
+```json
+{
+  "id": 1,
+  "city": "Rio de Janeiro",
+  "country": "BR",
+  "temperature": 28.5,
+  "feelsLike": 30.2,
+  "humidity": 65,
+  "description": "scattered clouds",
+  "windSpeed": 5.66,
+  "collectedAt": "2025-11-26T16:30:00",
+  "createdAt": "2025-11-26T16:30:05"
+}
+```
+
+**📊 Códigos de Resposta:**
+
+| Código | Descrição |
+|--------|-----------|
+| ✅ `200` | Dados obtidos com sucesso |
+| ❌ `404` | Cidade não encontrada |
+| 🔐 `401` | Chave de API inválida |
+| ⚠️ `429` | Limite de requisições excedido |
+
+---
+
+### 📊 Consultar Histórico
+
+Retorna o histórico de consultas de uma cidade (busca no banco local).
+
+```http
+GET /weather/history?city={city}
+```
+
+**📝 Exemplo:**
+```bash
+curl -X GET "http://localhost:8080/weather/history?city=rio%20de%20janeiro"
+```
+
+**✅ Resposta (200 OK):**
+```json
+[
+  {
+    "id": 3,
+    "city": "Rio de Janeiro",
+    "country": "BR",
+    "temperature": 28.5,
+    "feelsLike": 30.2,
+    "humidity": 65,
+    "description": "scattered clouds",
+    "windSpeed": 5.66,
+    "collectedAt": "2025-11-26T16:30:00",
+    "createdAt": "2025-11-26T16:30:05"
+  },
+  {
+    "id": 2,
+    "city": "Rio de Janeiro",
+    "country": "BR",
+    "temperature": 26.1,
+    "feelsLike": 27.8,
+    "humidity": 70,
+    "description": "clear sky",
+    "windSpeed": 4.12,
+    "collectedAt": "2025-11-26T14:15:00",
+    "createdAt": "2025-11-26T14:15:03"
+  }
+]
+```
+
+**📊 Códigos de Resposta:**
+
+| Código | Descrição |
+|--------|-----------|
+| ✅ `200` | Histórico retornado (lista pode estar vazia) |
+| ❌ `400` | Parâmetro city inválido |
+
+---
+
+## 🐳 Comandos Docker Úteis
+
+```bash
+# 🚀 Iniciar serviços
 docker compose up -d
 
-# Ver logs em tempo real
+# 📊 Ver logs em tempo real
 docker compose logs -f app
 
-# Parar apenas a API
-docker compose stop app
+# ⏸️ Parar serviços
+docker compose stop
 
-# Iniciar a API novamente
-docker compose start app
+# ▶️ Iniciar serviços parados
+docker compose start
 
-# Reiniciar a API
+# 🔄 Reiniciar um serviço específico
 docker compose restart app
 
-# Derrubar tudo
+# 🗑️ Parar e remover containers
 docker compose down
 
-# Ver status dos serviços
-docker compose ps
+# 💣 Parar e remover TUDO (incluindo volumes)
+docker compose down -v
+
+# 📋 Ver status dos containers
+docker ps
 ```
 
-## Contato
-- José Alberto Vilar Pereira
-- Email: `albertovilar1@gmail.com`
-- LinkedIn: `alberto-vilar-316725ab`
-- GitHub: `@albertovilar`
+---
+
+## 🗄️ Banco de Dados
+
+### Estrutura da Tabela `weather_data`
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| 🆔 `id` | BIGSERIAL | Identificador único (PK) |
+| 🏙️ `city` | VARCHAR(100) | Nome da cidade |
+| 🏳️ `country` | VARCHAR(10) | Código do país (ISO) |
+| 🌡️ `temperature` | NUMERIC(5,2) | Temperatura em °C |
+| 🤒 `feels_like` | NUMERIC(5,2) | Sensação térmica em °C |
+| 💧 `humidity` | INTEGER | Umidade relativa (%) |
+| 📝 `description` | VARCHAR(100) | Descrição do clima |
+| 💨 `wind_speed` | NUMERIC(5,2) | Velocidade do vento (m/s) |
+| 📅 `collected_at` | TIMESTAMP | Data/hora da coleta |
+| ⏰ `created_at` | TIMESTAMP | Data/hora do registro |
+
+Para busca acento‑insensível, habilite no Postgres: `CREATE EXTENSION IF NOT EXISTS unaccent;`
+
+---
+
+## 🏗️ Arquitetura
+
+### Camadas da Aplicação
+
+```
+🎮 Controller  → Recebe requisições HTTP
+     ↓
+💼 Service     → Lógica de negócio
+     ↓
+🔌 Client      → Chama API externa (OpenWeather)
+     ↓
+🔄 Converter   → Transforma objetos
+     ↓
+💾 Repository  → Acessa banco de dados
+     ↓
+🗄️ Database    → Armazena dados
+```
+
+---
+
+## 🛡️ Tratamento de Erros
+
+A API possui tratamento global de exceções com respostas padronizadas.
+
+**📝 Exemplo de erro 404:**
+```json
+{
+  "timestamp": "2025-11-26T16:30:00-03:00",
+  "status": 404,
+  "error": "Recurso não encontrado",
+  "message": "Cidade 'XYZ' não encontrada",
+  "path": "/weather/XYZ"
+}
+```
+
+**⚠️ Códigos de erro tratados:**
+
+| Código | Descrição |
+|--------|-----------|
+| `400` | Parâmetros inválidos |
+| `401` | Chave de API inválida |
+| `404` | Cidade não encontrada |
+| `429` | Limite de requisições excedido |
+| `500` | Erro interno do servidor |
+| `503` | Serviço externo indisponível |
+
+---
+
+## 🧪 Executar Testes
+
+```bash
+mvn test
+```
+
+Os testes utilizam banco **H2 em memória** (sem necessidade de Docker).
+
+---
+
+## 🔄 CI/CD
+
+O projeto possui **pipeline automatizado no GitHub Actions** que:
+
+- ✅ Executa build Maven
+- ✅ Roda todos os testes
+- ✅ Valida a compilação
+
+---
+
+## 💡 Decisões Técnicas
+
+### Por que Feign Client?
+
+Escolhi **Spring Cloud OpenFeign** porque:
+- ✅ Código declarativo e limpo (apenas interface)
+- ✅ Padrão em arquiteturas de microserviços
+- ✅ Integração nativa com Spring Cloud
+- ✅ Facilita manutenção e testes
+
+### Por que BigDecimal?
+
+Usei **BigDecimal** para temperatura porque:
+- ✅ Precisão decimal exata (Double usa ponto flutuante binário)
+- ✅ Evita erros de arredondamento
+- ✅ Essencial para medições que trafegam JSON → Banco → JSON
+
+### Por que busca case-insensitive?
+
+Implementei busca **case-insensitive** porque:
+- ✅ Melhor experiência do usuário
+- ✅ "Rio de Janeiro", "rio de janeiro" e "RIO" retornam os mesmos dados
+
+---
+
+## 🚧 Melhorias Futuras
+
+- [ ] 🗑️ Endpoint DELETE /weather/{id}
+- [ ] ✏️ Endpoint PUT /weather/{id}
+- [ ] 🔍 Filtros avançados (data, temperatura)
+- [ ] 📄 Paginação no histórico
+- [ ] ⚡ Cache com Redis
+- [ ] 🧪 Testes de integração
+- [ ] 🔐 Autenticação e autorização
+
+---
+
+## 📞 Contato
+
+**José Alberto Vilar Pereira**
+
+- 📧 Email: albertovilar1@gmail.com
+- 💼 LinkedIn: [alberto-vilar-316725ab](https://linkedin.com/in/alberto-vilar-316725ab)
+- 👨‍💻 GitHub: [@albertovilar](https://github.com/albertovilar)
+
+---
+
+## 📄 Licença
+
+Este projeto foi desenvolvido como desafio técnico para processo seletivo.
+
+---
+
+<div align="center">
+
+⭐ **Desenvolvido com dedicação para GnTech Exames** ⭐
+
+</div>
