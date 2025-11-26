@@ -50,3 +50,4 @@ mvnw.cmd
 # Sensitive data
 # application-prod.properties
 .env
+!.env.example
