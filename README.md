@@ -410,7 +410,7 @@ Implementei busca **case-insensitive** porque:
 **José Alberto Vilar Pereira**
 
 - 📧 Email: albertovilar1@gmail.com
-- 💼 LinkedIn: [alberto-vilar-316725ab](https://linkedin.com/in/alberto-vilar-316725ab)
+- 💼 LinkedIn: [www.linkedin.com/in/albertovilar1](https://www.linkedin.com/in/albertovilar1)
 - 👨‍💻 GitHub: [@albertovilar](https://github.com/albertovilar)
 
 ---
