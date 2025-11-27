@@ -17,11 +17,23 @@ import java.time.OffsetDateTime;
 @RestControllerAdvice(assignableTypes = WeatherController.class)
 public class GlobalExceptionHandler {
 
+    private String statusDescricaoPt(HttpStatus status) {
+        return switch (status) {
+            case BAD_REQUEST -> "Requisição inválida";
+            case UNAUTHORIZED -> "Não autorizado";
+            case NOT_FOUND -> "Recurso não encontrado";
+            case TOO_MANY_REQUESTS -> "Muitas solicitações";
+            case INTERNAL_SERVER_ERROR -> "Erro interno do servidor";
+            case SERVICE_UNAVAILABLE -> "Serviço indisponível";
+            default -> status.getReasonPhrase();
+        };
+    }
+
     private StandardError buildError(HttpStatus status, String message, HttpServletRequest req) {
         StandardError err = new StandardError();
         err.setTimestamp(OffsetDateTime.now().toString());
         err.setStatus(status.value());
-        err.setError(status.getReasonPhrase());
+        err.setError(statusDescricaoPt(status));
         err.setMessage(message);
         err.setPath(req.getRequestURI());
         return err;

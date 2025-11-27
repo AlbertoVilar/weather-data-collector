@@ -35,7 +35,7 @@ public class WeatherService {
 
     public WeatherResponseDTO getWeatherByCity(String city) {
         if (city == null || city.isBlank()) {
-            throw new BadRequestException("City cannot be null or empty");
+            throw new BadRequestException("Cidade não pode ser nula ou vazia");
         }
         if (apiKey == null || apiKey.isBlank()) {
             throw new InvalidApiKeyException("Chave de API não configurada. Configure a variável OPENWEATHER_API_KEY");
@@ -54,7 +54,7 @@ public class WeatherService {
 
     public List<WeatherResponseDTO> getHistoryByCity(String city) {
         if (city == null || city.isBlank()) {
-            throw new BadRequestException("City cannot be null or empty");
+            throw new BadRequestException("Cidade não pode ser nula ou vazia");
         }
 
         var weatherDataList = repository.findByCityAccentInsensitiveOrderByCollectedAtDesc(city);
